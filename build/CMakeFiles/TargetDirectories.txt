@@ -1,0 +1,8 @@
+/home/fefotron/dev/cpp_learning/lesson2-3/build/CMakeFiles/rebuild_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/CMakeFiles/edit_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/CMakeFiles/sistema_modular.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/json-build/CMakeFiles/edit_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/json-build/CMakeFiles/rebuild_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/spdlog-build/CMakeFiles/edit_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/spdlog-build/CMakeFiles/rebuild_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/spdlog-build/CMakeFiles/spdlog.dir

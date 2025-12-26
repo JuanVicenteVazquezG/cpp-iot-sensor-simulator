@@ -1,0 +1,3 @@
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/spdlog-subbuild/CMakeFiles/rebuild_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/spdlog-subbuild/CMakeFiles/edit_cache.dir
+/home/fefotron/dev/cpp_learning/lesson2-3/build/_deps/spdlog-subbuild/CMakeFiles/spdlog-populate.dir

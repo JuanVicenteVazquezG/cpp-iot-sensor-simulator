@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/sistema_modular.dir/src/main.cpp.o CMakeFiles/sistema_modular.dir/src/Sensor.cpp.o  -o sistema_modular  _deps/spdlog-build/libspdlog.a -lpthread 
