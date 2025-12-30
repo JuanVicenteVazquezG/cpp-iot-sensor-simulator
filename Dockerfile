@@ -1,38 +1,67 @@
-# 1. IMAGEN BASE: Empezamos con un Ubuntu 22.04 limpio
+# --- ETAPA 1: BUILDER (El Taller) ---
 FROM ubuntu:22.04 AS Builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalamos compilador (g++), CMake y Git (necesario para bajar la librería JSON)
+# 1. Instalamos herramientas básicas (SIN librerías paho de apt)
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Creamos una carpeta dentro del contenedor y nos metemos en ella
+WORKDIR /tmp
+
+# 2. COMPILAR PAHO MQTT C (El Motor) - Desde Fuente
+# Necesitamos compilarla con flags específicos para que genere los targets estáticos
+RUN git clone https://github.com/eclipse/paho.mqtt.c.git && \
+    cd paho.mqtt.c && \
+    git checkout v1.3.13 && \
+    cmake -Bbuild -H. \
+        -DPAHO_ENABLE_TESTING=FALSE \
+        -DPAHO_BUILD_STATIC=TRUE \
+        -DPAHO_BUILD_SHARED=TRUE \
+        -DPAHO_WITH_SSL=FALSE && \
+    cmake --build build/ --target install && \
+    ldconfig
+
+# 3. COMPILAR PAHO MQTT C++ (El Wrapper) - Desde Fuente
+# Ahora sí encontrará la librería C estática que acabamos de compilar
+RUN git clone https://github.com/eclipse/paho.mqtt.cpp.git && \
+    cd paho.mqtt.cpp && \
+    git checkout v1.3.2 && \
+    cmake -Bbuild -H. \
+        -DPAHO_BUILD_DOCUMENTATION=FALSE \
+        -DPAHO_BUILD_SAMPLES=FALSE \
+        -DPAHO_BUILD_STATIC=TRUE \
+        -DPAHO_BUILD_SHARED=TRUE \
+        -DPAHO_WITH_SSL=FALSE && \
+    cmake --build build/ --target install && \
+    ldconfig
+
+# --- AHORA VAMOS CON TU PROYECTO ---
 WORKDIR /app
-
-
-# Copiamos todo lo de tu carpeta actual (.) a la carpeta del contenedor (.)
 COPY . .
 
-# Compilamos (Aquí se descarga JSON y SPDLOG, y se genera el ejecutable)
-# RUN mkdir build && cd build && cmake .. && cmake --build .
+# 4. Compilamos tu proyecto
 RUN mkdir -p build && cd build && cmake .. && cmake --build .
 
-# --- ETAPA 2: EL EJECUTOR (El Producto Final) ---
-# Empezamos de cero con un Ubuntu limpio.
+
+# --- ETAPA 2: RUNNER (El Producto Final) ---
 FROM ubuntu:22.04
-# Solo limpiamos caches (no instalamos compiladores)
-RUN apt-get update && rm -rf /var/lib/apt/lists/*
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Necesitamos copiar las librerías que compilamos manualmente
+# desde el Builder al Runner, porque no existen en el apt de Ubuntu por defecto.
+COPY --from=Builder /usr/local/lib/libpaho* /usr/lib/
+
+# Actualizamos la caché de librerías del runner
+RUN ldconfig
 
 WORKDIR /app
 
-# --- LA MAGIA ESTÁ AQUÍ ---
-# Copiamos SOLO el archivo ejecutable DESDE la etapa "builder"
-# Todo lo demás (código fuente, git, librerías intermedias) se destruye.
-COPY --from=builder /app/build/sistema_modular .
+# Copiamos el ejecutable
+COPY --from=Builder /app/build/sistema_modular .
 
-# Comando de arranque
 CMD ["./sistema_modular"]

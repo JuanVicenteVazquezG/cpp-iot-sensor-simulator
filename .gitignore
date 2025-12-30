@@ -1,0 +1,11 @@
+# .gitignore para C++ y CMake
+build/
+bin/
+lib/
+*.d
+*.o
+*.obj
+.vscode/
+.idea/
+.DS_Store
+*.swp

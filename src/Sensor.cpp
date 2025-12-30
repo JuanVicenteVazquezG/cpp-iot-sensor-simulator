@@ -1,28 +1,24 @@
 #include "Sensor.h"
-#include <spdlog/spdlog.h> // Si quieres loguear aquí, usa esto, no cout
+#include <cstdlib> // Para rand
+#include <ctime> // Para time
 
-// CORRECCIÓN 1: Usamos {} para inicializar (Uniform Initialization)
-// CORRECCIÓN 2: Quitamos los guiones bajos '_id'. Usamos el mismo nombre y la lista lo resuelve.
-Sensor::Sensor(int id, double temp) 
-    : id{id}, temperatura{temp} 
-{
-    // Constructor vacío
-}
+using namespace nlohmann;
 
-// CORRECCIÓN 3: Logging consistente (opcional, o dejar vacío)
-Sensor::~Sensor()
-{
-    // spdlog::debug("Sensor {} eliminado", id); 
-}
+Sensor::Sensor() {
+    std::srand(std::time(nullptr));
+};
 
-// CORRECCIÓN 4: Eliminamos to_json() y leer() con cout. 
-// El sensor no debe saber imprimir, solo medir.
+nlohmann::json Sensor::leerDatos(){
+// 1. Simulamos datos aleatorios
+    double temperatura = 20.0 + (std::rand() % 100) / 10.0; // Entre 20.0 y 30.0
+    double humedad = 40.0 + (std::rand() % 200) / 10.0;     // Entre 40.0 y 60.0
 
-// CORRECCIÓN 5: Designated Initializers (C++20) para seguridad máxima
-DatosTelemetria Sensor::leerDatos() const {
-    return DatosTelemetria{
-        .id = this->id,
-        .temperatura = this->temperatura, // Asegúrate que en Sensor.h la variable se llame 'temperatura' y no 'valor'
-        .estado = EstadoSensor::OK
-    };
+   // 2. Construimos el JSON
+   json datos;
+   datos["sensor_id"] = "vama_temp_01";
+   datos["temperatura"] = temperatura;
+   datos["humedad"] = humedad;
+   datos["timestamp"] = std::time(nullptr);
+    // Hora actual UNIX
+    return datos;
 }
